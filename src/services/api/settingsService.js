@@ -10,13 +10,13 @@ const tableName = 'settings';
 
 export const getSettings = async () => {
   try {
-    const params = {
+const params = {
       fields: [
-        { "field": { "Name": "Name" } },
-        { "field": { "Name": "company_name" } },
-        { "field": { "Name": "gst_rate" } },
-        { "field": { "Name": "currency1" } },
-        { "field": { "Name": "currency_symbol" } }
+        { "field": { "name": "Name" } },
+        { "field": { "name": "company_name" } },
+        { "field": { "name": "gst_rate" } },
+        { "field": { "name": "currency1" } },
+        { "field": { "name": "currency_symbol" } }
       ]
     };
 
@@ -48,13 +48,13 @@ if (!response.success) {
 export const updateSettings = async (settingsData) => {
   try {
     // First, try to get existing settings to check if we need to create or update
-    const existingSettings = await apperClient.fetchRecords(tableName, {
+const existingSettings = await apperClient.fetchRecords(tableName, {
       fields: [
-        { "field": { "Name": "Name" } },
-        { "field": { "Name": "company_name" } },
-        { "field": { "Name": "gst_rate" } },
-        { "field": { "Name": "currency1" } },
-        { "field": { "Name": "currency_symbol" } }
+        { "field": { "name": "Name" } },
+        { "field": { "name": "company_name" } },
+        { "field": { "name": "gst_rate" } },
+        { "field": { "name": "currency1" } },
+        { "field": { "name": "currency_symbol" } }
       ]
     });
 const params = {
