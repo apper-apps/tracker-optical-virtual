@@ -12,20 +12,20 @@ const CustomerFormModal = ({
   customer, 
   onSave 
 }) => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+const [formData, setFormData] = useState({
+    first_name: '',
+    last_name: '',
     email: '',
     phone: '',
     company: '',
-    serviceId: '',
+    service_id: '',
     price: '',
-    billingFrequency: 'monthly',
+    billing_frequency: 'monthly',
     quantity: 1,
-    startDate: '',
-    contractDuration: 12,
+    start_date: '',
+    contract_duration: 12,
     status: 'active',
-    paymentStatus: 'TBC',
+    payment_status: 'TBC',
     notes: ''
   })
   
@@ -37,39 +37,39 @@ const CustomerFormModal = ({
     loadServices()
   }, [])
   
-  useEffect(() => {
+useEffect(() => {
     if (customer) {
       setFormData({
-        firstName: customer.firstName || '',
-        lastName: customer.lastName || '',
+        first_name: customer.first_name || '',
+        last_name: customer.last_name || '',
         email: customer.email || '',
         phone: customer.phone || '',
         company: customer.company || '',
-        serviceId: customer.serviceId || '',
+        service_id: customer.service_id || '',
         price: customer.price || '',
-        billingFrequency: customer.billingFrequency || 'monthly',
+        billing_frequency: customer.billing_frequency || 'monthly',
         quantity: customer.quantity || 1,
-        startDate: customer.startDate || '',
-        contractDuration: customer.contractDuration || 12,
+        start_date: customer.start_date || '',
+        contract_duration: customer.contract_duration || 12,
         status: customer.status || 'active',
-        paymentStatus: customer.paymentStatus || 'TBC',
+        payment_status: customer.payment_status || 'TBC',
         notes: customer.notes || ''
       })
     } else {
       setFormData({
-        firstName: '',
-        lastName: '',
+        first_name: '',
+        last_name: '',
         email: '',
         phone: '',
         company: '',
-        serviceId: '',
+        service_id: '',
         price: '',
-        billingFrequency: 'monthly',
+        billing_frequency: 'monthly',
         quantity: 1,
-        startDate: new Date().toISOString().split('T')[0],
-        contractDuration: 12,
+        start_date: new Date().toISOString().split('T')[0],
+        contract_duration: 12,
         status: 'active',
-        paymentStatus: 'TBC',
+        payment_status: 'TBC',
         notes: ''
       })
     }
@@ -100,17 +100,16 @@ const CustomerFormModal = ({
     }
   }
   
-  const validateForm = () => {
+const validateForm = () => {
     const newErrors = {}
     
-    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required'
-    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required'
+    if (!formData.first_name.trim()) newErrors.first_name = 'First name is required'
+    if (!formData.last_name.trim()) newErrors.last_name = 'Last name is required'
     if (!formData.email.trim()) newErrors.email = 'Email is required'
     if (!formData.company.trim()) newErrors.company = 'Company is required'
-    if (!formData.serviceId) newErrors.serviceId = 'Service is required'
+    if (!formData.service_id) newErrors.service_id = 'Service is required'
     if (!formData.price || parseFloat(formData.price) <= 0) newErrors.price = 'Valid price is required'
-    if (!formData.startDate) newErrors.startDate = 'Start date is required'
-    
+    if (!formData.start_date) newErrors.start_date = 'Start date is required'
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (formData.email && !emailRegex.test(formData.email)) {
@@ -185,20 +184,20 @@ const CustomerFormModal = ({
     >
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Input
+<Input
             label="First Name"
-            name="firstName"
-            value={formData.firstName}
+            name="first_name"
+            value={formData.first_name}
             onChange={handleInputChange}
-            error={errors.firstName}
+            error={errors.first_name}
             required
           />
-          <Input
+<Input
             label="Last Name"
-            name="lastName"
-            value={formData.lastName}
+            name="last_name"
+            value={formData.last_name}
             onChange={handleInputChange}
-            error={errors.lastName}
+            error={errors.last_name}
             required
           />
         </div>
@@ -231,13 +230,13 @@ const CustomerFormModal = ({
         />
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Select
+<Select
             label="Service"
-            name="serviceId"
-            value={formData.serviceId}
+            name="service_id"
+            value={formData.service_id}
             onChange={handleInputChange}
             options={getServiceOptions()}
-            error={errors.serviceId}
+            error={errors.service_id}
             required
           />
           <Input
@@ -253,10 +252,10 @@ const CustomerFormModal = ({
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Select
+<Select
             label="Billing Frequency"
-            name="billingFrequency"
-            value={formData.billingFrequency}
+            name="billing_frequency"
+            value={formData.billing_frequency}
             onChange={handleInputChange}
             options={billingFrequencyOptions}
           />
@@ -271,21 +270,21 @@ const CustomerFormModal = ({
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Input
+<Input
             label="Start Date"
-            name="startDate"
+            name="start_date"
             type="date"
-            value={formData.startDate}
+            value={formData.start_date}
             onChange={handleInputChange}
-            error={errors.startDate}
+            error={errors.start_date}
             required
           />
-          <Input
+<Input
             label="Contract Duration (months)"
-            name="contractDuration"
+            name="contract_duration"
             type="number"
             min="1"
-            value={formData.contractDuration}
+            value={formData.contract_duration}
             onChange={handleInputChange}
           />
         </div>
@@ -298,10 +297,10 @@ const CustomerFormModal = ({
             onChange={handleInputChange}
             options={statusOptions}
           />
-          <Select
+<Select
             label="Payment Status"
-            name="paymentStatus"
-            value={formData.paymentStatus}
+            name="payment_status"
+            value={formData.payment_status}
             onChange={handleInputChange}
             options={paymentStatusOptions}
           />

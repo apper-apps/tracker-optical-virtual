@@ -41,12 +41,12 @@ const Dashboard = () => {
         getSettings()
       ])
       
-      // Enrich customers with service names
+// Enrich customers with service names
       const enrichedCustomers = customersData.map(customer => {
-        const service = servicesData.find(s => s.Id === parseInt(customer.serviceId))
+        const service = servicesData.find(s => s.Id === parseInt(customer.service_id))
         return {
           ...customer,
-          serviceName: service?.name || 'Unknown Service'
+          serviceName: service?.Name || 'Unknown Service'
         }
       })
       
@@ -68,9 +68,8 @@ const Dashboard = () => {
     let pendingCustomers = 0
     let churnedCustomers = 0
     
-    customers.forEach(customer => {
-      const monthlyRevenue = calculateMonthlyRevenue(customer.price * customer.quantity, customer.billingFrequency)
-      
+customers.forEach(customer => {
+      const monthlyRevenue = calculateMonthlyRevenue(customer.price * customer.quantity, customer.billing_frequency)
       if (customer.status === 'active') {
         activeMrr += monthlyRevenue
         activeCustomers++
@@ -141,9 +140,9 @@ const Dashboard = () => {
         savedCustomer = await createCustomer(customerData)
       }
       
-      // Enrich with service name
-      const service = services.find(s => s.Id === parseInt(savedCustomer.serviceId))
-      savedCustomer.serviceName = service?.name || 'Unknown Service'
+// Enrich with service name
+      const service = services.find(s => s.Id === parseInt(savedCustomer.service_id))
+      savedCustomer.serviceName = service?.Name || 'Unknown Service'
       
       if (editingCustomer) {
         setCustomers(prev => prev.map(c => 
@@ -191,18 +190,18 @@ const Dashboard = () => {
       
       for (const customerData of importData) {
         // Find service by name if serviceId is not provided
-        if (!customerData.serviceId && customerData.serviceId !== 0) {
+if (!customerData.service_id && customerData.service_id !== 0) {
           const service = services.find(s => 
-            s.name.toLowerCase() === customerData.service?.toLowerCase()
+            s.Name.toLowerCase() === customerData.service?.toLowerCase()
           )
           if (service) {
-            customerData.serviceId = service.Id
+            customerData.service_id = service.Id
           }
         }
         
-        const savedCustomer = await createCustomer(customerData)
-        const service = services.find(s => s.Id === parseInt(savedCustomer.serviceId))
-        savedCustomer.serviceName = service?.name || 'Unknown Service'
+const savedCustomer = await createCustomer(customerData)
+        const service = services.find(s => s.Id === parseInt(savedCustomer.service_id))
+        savedCustomer.serviceName = service?.Name || 'Unknown Service'
         importedCustomers.push(savedCustomer)
       }
       

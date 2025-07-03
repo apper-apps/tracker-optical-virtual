@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion'
+import { useContext } from 'react'
+import { AuthContext } from '@/App'
 import ApperIcon from '@/components/ApperIcon'
 import Button from '@/components/atoms/Button'
-
 const Header = ({ onAddCustomer, onImportCSV, onSettings }) => {
   return (
     <motion.header
@@ -22,8 +23,16 @@ const Header = ({ onAddCustomer, onImportCSV, onSettings }) => {
               </div>
             </div>
           </div>
-          
-          <div className="flex items-center space-x-3">
+<div className="flex items-center space-x-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              icon="LogOut"
+              onClick={() => useContext(AuthContext).logout()}
+              className="hidden sm:flex"
+            >
+              Logout
+            </Button>
             <Button
               variant="outline"
               size="sm"

@@ -18,11 +18,11 @@ const CustomerTable = ({
   const [searchTerm, setSearchTerm] = useState('')
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
   
-  const filteredCustomers = customers.filter(customer => {
+const filteredCustomers = customers.filter(customer => {
     const searchLower = searchTerm.toLowerCase()
     return (
-      customer.firstName.toLowerCase().includes(searchLower) ||
-      customer.lastName.toLowerCase().includes(searchLower) ||
+      customer.first_name.toLowerCase().includes(searchLower) ||
+      customer.last_name.toLowerCase().includes(searchLower) ||
       customer.email.toLowerCase().includes(searchLower) ||
       customer.company.toLowerCase().includes(searchLower) ||
       customer.status.toLowerCase().includes(searchLower)
@@ -59,8 +59,8 @@ const CustomerTable = ({
     toast.success(`Customer status updated to ${newStatus}`)
   }
   
-  const handleDelete = (customer) => {
-    if (window.confirm(`Are you sure you want to delete ${customer.firstName} ${customer.lastName}?`)) {
+const handleDelete = (customer) => {
+    if (window.confirm(`Are you sure you want to delete ${customer.first_name} ${customer.last_name}?`)) {
       onDeleteCustomer(customer.Id)
       toast.success('Customer deleted successfully')
     }
@@ -127,8 +127,8 @@ const CustomerTable = ({
             <thead className="bg-surface-50">
               <tr>
                 <th className="px-6 py-4 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
-                  <button
-                    onClick={() => handleSort('firstName')}
+<button
+                    onClick={() => handleSort('first_name')}
                     className="flex items-center space-x-1 hover:text-primary-600 transition-colors"
                   >
                     <span>Customer</span>
@@ -188,15 +188,15 @@ const CustomerTable = ({
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-r from-primary-600 to-primary-700 flex items-center justify-center">
+<div className="h-10 w-10 rounded-full bg-gradient-to-r from-primary-600 to-primary-700 flex items-center justify-center">
                           <span className="text-sm font-medium text-white">
-                            {customer.firstName[0]}{customer.lastName[0]}
+                            {customer.first_name[0]}{customer.last_name[0]}
                           </span>
                         </div>
                       </div>
-                      <div className="ml-4">
+<div className="ml-4">
                         <div className="text-sm font-medium text-surface-900">
-                          {customer.firstName} {customer.lastName}
+                          {customer.first_name} {customer.last_name}
                         </div>
                         <div className="text-sm text-surface-500">
                           {customer.email}
@@ -216,9 +216,9 @@ const CustomerTable = ({
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-surface-900">
                     {formatCurrency(customer.price * customer.quantity)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+<td className="px-6 py-4 whitespace-nowrap">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-100 text-surface-800 capitalize">
-                      {customer.billingFrequency}
+                      {customer.billing_frequency}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -227,14 +227,14 @@ const CustomerTable = ({
                       onClick={() => handleStatusToggle(customer.Id, customer.status)}
                     />
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+<td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      customer.paymentStatus === 'Paid' ? 'bg-green-100 text-green-800' :
-                      customer.paymentStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                      customer.paymentStatus === 'Overdue' ? 'bg-red-100 text-red-800' :
+                      customer.payment_status === 'Paid' ? 'bg-green-100 text-green-800' :
+                      customer.payment_status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                      customer.payment_status === 'Overdue' ? 'bg-red-100 text-red-800' :
                       'bg-surface-100 text-surface-800'
                     }`}>
-                      {customer.paymentStatus}
+                      {customer.payment_status}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
