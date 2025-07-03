@@ -5,6 +5,11 @@ import { ToastContainer } from 'react-toastify'
 import { setUser, clearUser } from '@/store/userSlice'
 import Layout from '@/components/organisms/Layout'
 import Dashboard from '@/components/pages/Dashboard'
+import Customers from '@/components/pages/Customers'
+import Services from '@/components/pages/Services'
+import Analytics from '@/components/pages/Analytics'
+import Reports from '@/components/pages/Reports'
+import Settings from '@/components/pages/Settings'
 import Login from '@/components/pages/Login'
 import Signup from '@/components/pages/Signup'
 import Callback from '@/components/pages/Callback'
@@ -131,9 +136,14 @@ function App() {
         <Route path="/callback" element={<Callback />} />
         <Route path="/error" element={<ErrorPage />} />
         <Route path="/prompt-password/:appId/:emailAddress/:provider" element={<PromptPassword />} />
-        <Route path="/reset-password/:appId/:fields" element={<ResetPassword />} />
+<Route path="/reset-password/:appId/:fields" element={<ResetPassword />} />
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
+          <Route path="customers" element={<Customers />} />
+          <Route path="services" element={<Services />} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
       <ToastContainer 

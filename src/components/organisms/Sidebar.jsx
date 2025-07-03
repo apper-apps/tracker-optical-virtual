@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion'
-import { useLocation } from 'react-router-dom'
+import { useLocation, Link } from 'react-router-dom'
 import ApperIcon from '@/components/ApperIcon'
 
 const Sidebar = () => {
   const location = useLocation()
   
-  const menuItems = [
-    { icon: 'BarChart3', label: 'Dashboard', path: '/', active: true },
+const menuItems = [
+    { icon: 'BarChart3', label: 'Dashboard', path: '/' },
     { icon: 'Users', label: 'Customers', path: '/customers' },
     { icon: 'Package', label: 'Services', path: '/services' },
     { icon: 'TrendingUp', label: 'Analytics', path: '/analytics' },
@@ -41,18 +41,19 @@ const Sidebar = () => {
               key={item.path}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
+transition={{ delay: index * 0.1 }}
             >
-              <button
+              <Link
+                to={item.path}
                 className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-left ${
-                  item.active 
+                  location.pathname === item.path || (item.path === '/' && location.pathname === '/')
                     ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg' 
                     : 'text-surface-700 hover:bg-surface-100 hover:text-primary-600'
                 }`}
               >
                 <ApperIcon name={item.icon} size={18} />
                 <span className="font-medium">{item.label}</span>
-              </button>
+              </Link>
             </motion.div>
           ))}
         </nav>
