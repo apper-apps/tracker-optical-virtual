@@ -1,3 +1,5 @@
+import React from "react";
+import Error from "@/components/ui/Error";
 const { ApperClient } = window.ApperSDK;
 
 // Initialize ApperClient
@@ -12,11 +14,11 @@ export const getSettings = async () => {
   try {
 const params = {
       fields: [
-        { "field": { "name": "Name" } },
-        { "field": { "name": "company_name" } },
-        { "field": { "name": "gst_rate" } },
-        { "field": { "name": "currency1" } },
-        { "field": { "name": "currency_symbol" } }
+        { "field": { "Name": "Name" } },
+        { "field": { "Name": "company_name" } },
+        { "field": { "Name": "gst_rate" } },
+        { "field": { "Name": "currency1" } },
+        { "field": { "Name": "currency_symbol" } }
       ]
     };
 
@@ -49,15 +51,16 @@ export const updateSettings = async (settingsData) => {
   try {
     // First, try to get existing settings to check if we need to create or update
 const existingSettings = await apperClient.fetchRecords(tableName, {
-      fields: [
-        { "field": { "name": "Name" } },
-        { "field": { "name": "company_name" } },
-        { "field": { "name": "gst_rate" } },
-        { "field": { "name": "currency1" } },
-        { "field": { "name": "currency_symbol" } }
-      ]
+fields: [
+        { "field": { "Name": "Name" } },
+        { "field": { "Name": "company_name" } },
+        { "field": { "Name": "gst_rate" } },
+        { "field": { "Name": "currency1" } },
+        { "field": { "Name": "currency_symbol" } }
+]
     });
-const params = {
+
+    const params = {
       records: [{
         company_name: settingsData.companyName,
         gst_rate: parseFloat(settingsData.gstRate),
@@ -65,7 +68,8 @@ const params = {
         currency_symbol: settingsData.currencySymbol
       }]
     };
-let response;
+
+    let response;
     if (existingSettings.success && existingSettings.data?.length > 0) {
       // Update existing record
       params.records[0].Id = existingSettings.data[0].Id;
