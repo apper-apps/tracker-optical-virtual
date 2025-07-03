@@ -318,8 +318,11 @@ const loadData = async () => {
                   <span className="text-surface-600">Total Payments</span>
                   <span className="font-medium text-green-600">
                     {formatCurrency((transactions || [])
-                      .filter(t => t?.transactionType === 'Payment')
-                      .reduce((sum, t) => sum + (parseFloat(t?.amount) || 0), 0)
+                      .filter(t => t && t.transactionType === 'Payment')
+                      .reduce((sum, t) => {
+                        const amount = typeof t.amount === 'number' ? t.amount : parseFloat(t.amount) || 0
+                        return sum + amount
+                      }, 0)
                     )}
                   </span>
                 </div>
@@ -327,8 +330,11 @@ const loadData = async () => {
                   <span className="text-surface-600">Total Absorptions</span>
                   <span className="font-medium text-blue-600">
                     {formatCurrency((transactions || [])
-                      .filter(t => t?.transactionType === 'Cost Absorption')
-                      .reduce((sum, t) => sum + (parseFloat(t?.amount) || 0), 0)
+                      .filter(t => t && t.transactionType === 'Cost Absorption')
+                      .reduce((sum, t) => {
+                        const amount = typeof t.amount === 'number' ? t.amount : parseFloat(t.amount) || 0
+                        return sum + amount
+                      }, 0)
                     )}
                   </span>
                 </div>
@@ -336,8 +342,9 @@ const loadData = async () => {
                   <span className="text-surface-600">Net Flow</span>
                   <span className="font-medium">
                     {formatCurrency((transactions || []).reduce((sum, t) => {
-                      const amount = parseFloat(t?.amount) || 0
-                      return t?.transactionType === 'Payment' ? sum + amount : sum - amount
+                      if (!t || !t.transactionType) return sum
+                      const amount = typeof t.amount === 'number' ? t.amount : parseFloat(t.amount) || 0
+                      return t.transactionType === 'Payment' ? sum + amount : sum - amount
                     }, 0))}
                   </span>
                 </div>
@@ -367,14 +374,25 @@ const loadData = async () => {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-surface-600">Active Relationships</span>
+<span className="text-surface-600">Active Relationships</span>
                   <span className="font-medium text-green-600">
                     {(() => {
                       try {
-                        const relationshipIds = new Set([
-                          ...(transactions || []).map(t => t?.mainCompany).filter(id => id != null),
-                          ...(transactions || []).map(t => t?.subsidiary).filter(id => id != null)
-                        ])
+                        const relationshipIds = new Set()
+                        
+                        ;(transactions || []).forEach(t => {
+                          if (t && t.mainCompany) {
+                            // Handle both direct ID and lookup object structure
+                            const mainId = typeof t.mainCompany === 'object' ? t.mainCompany.Id : t.mainCompany
+                            if (mainId != null) relationshipIds.add(mainId)
+                          }
+                          if (t && t.subsidiary) {
+                            // Handle both direct ID and lookup object structure  
+                            const subId = typeof t.subsidiary === 'object' ? t.subsidiary.Id : t.subsidiary
+                            if (subId != null) relationshipIds.add(subId)
+                          }
+                        })
+                        
                         return relationshipIds.size
                       } catch (err) {
                         console.error('Error calculating active relationships:', err)
