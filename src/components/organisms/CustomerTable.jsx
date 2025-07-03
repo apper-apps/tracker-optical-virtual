@@ -244,10 +244,11 @@ const CustomerTable = ({
                     >
                       <ApperIcon name="Edit" size={16} />
                     </button>
-                    <button
+<button
                       onClick={() => handleDelete(customer)}
                       className="text-red-600 hover:text-red-900 transition-colors"
-<ApperIcon name="Trash2" size={16} />
+                    >
+                      <ApperIcon name="Trash2" size={16} />
                     </button>
                   </td>
                 </motion.tr>
@@ -257,7 +258,6 @@ const CustomerTable = ({
         </div>
       )}
     </Card>
-  )
   )
 }
 
