@@ -10,6 +10,7 @@ const menuItems = [
     { icon: 'Users', label: 'Customers', path: '/customers' },
     { icon: 'Package', label: 'Services', path: '/services' },
     { icon: 'TrendingUp', label: 'Analytics', path: '/analytics' },
+    { icon: 'ArrowRightLeft', label: 'Transactions', path: '/transactions' },
     { icon: 'FileText', label: 'Reports', path: '/reports' },
     { icon: 'Settings', label: 'Settings', path: '/settings' }
   ]

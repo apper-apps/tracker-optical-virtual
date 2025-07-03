@@ -7,29 +7,53 @@ import Card from '@/components/atoms/Card'
 import ApperIcon from '@/components/ApperIcon'
 import { getCustomers } from '@/services/api/customerService'
 import { getSettings } from '@/services/api/settingsService'
-
+import { getInterCompanyTransactions } from '@/services/api/interCompanyTransactionService'
+import { getSalesCommissions, getCommissionSummary } from '@/services/api/salesCommissionService'
+import { getPartnerDiscounts, getDiscountSummary } from '@/services/api/partnerDiscountService'
 const Reports = () => {
   const [customers, setCustomers] = useState([])
   const [settings, setSettings] = useState({ gstRate: 10, currencySymbol: '$' })
+  const [transactions, setTransactions] = useState([])
+  const [commissions, setCommissions] = useState([])
+  const [discounts, setDiscounts] = useState([])
+  const [commissionSummary, setCommissionSummary] = useState({})
+  const [discountSummary, setDiscountSummary] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-
   useEffect(() => {
     loadData()
   }, [])
 
-  const loadData = async () => {
+const loadData = async () => {
     setLoading(true)
     setError('')
     
     try {
-      const [customersData, settingsData] = await Promise.all([
+      const [
+        customersData, 
+        settingsData, 
+        transactionsData, 
+        commissionsData,
+        discountsData,
+        commissionSummaryData,
+        discountSummaryData
+      ] = await Promise.all([
         getCustomers(),
-        getSettings()
+        getSettings(),
+        getInterCompanyTransactions(),
+        getSalesCommissions(),
+        getPartnerDiscounts(),
+        getCommissionSummary(),
+        getDiscountSummary()
       ])
       
       setCustomers(customersData)
       setSettings(settingsData)
+      setTransactions(transactionsData)
+      setCommissions(commissionsData)
+      setDiscounts(discountsData)
+      setCommissionSummary(commissionSummaryData)
+      setDiscountSummary(discountSummaryData)
     } catch (err) {
       setError('Failed to load reports data')
     } finally {
@@ -213,11 +237,317 @@ const Reports = () => {
               </div>
             </div>
           </Card>
+</div>
+
+        {/* Inter-Company Transactions Section */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-surface-900 mb-6">Inter-Company Transactions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <ApperIcon name="ArrowRightLeft" size={24} className="text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-surface-900">Transaction Summary</h3>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Total Transactions</span>
+                  <span className="font-medium">{transactions.length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Payments</span>
+                  <span className="font-medium text-green-600">
+                    {transactions.filter(t => t.transactionType === 'Payment').length}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Cost Absorptions</span>
+                  <span className="font-medium text-blue-600">
+                    {transactions.filter(t => t.transactionType === 'Cost Absorption').length}
+                  </span>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                  <ApperIcon name="DollarSign" size={24} className="text-indigo-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-surface-900">Financial Flow</h3>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Total Payments</span>
+                  <span className="font-medium text-green-600">
+                    {formatCurrency(transactions
+                      .filter(t => t.transactionType === 'Payment')
+                      .reduce((sum, t) => sum + (t.amount || 0), 0)
+                    )}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Total Absorptions</span>
+                  <span className="font-medium text-blue-600">
+                    {formatCurrency(transactions
+                      .filter(t => t.transactionType === 'Cost Absorption')
+                      .reduce((sum, t) => sum + (t.amount || 0), 0)
+                    )}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Net Flow</span>
+                  <span className="font-medium">
+                    {formatCurrency(transactions.reduce((sum, t) => {
+                      return t.transactionType === 'Payment' ? sum + (t.amount || 0) : sum - (t.amount || 0)
+                    }, 0))}
+                  </span>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
+                  <ApperIcon name="Building2" size={24} className="text-teal-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-surface-900">Company Breakdown</h3>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Main Companies</span>
+                  <span className="font-medium">
+                    {customers.filter(c => c.companyType === 'Main').length}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Subsidiaries</span>
+                  <span className="font-medium">
+                    {customers.filter(c => c.companyType === 'Subsidiary').length}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Active Relationships</span>
+                  <span className="font-medium text-green-600">
+                    {new Set([...transactions.map(t => t.mainCompany), ...transactions.map(t => t.subsidiary)]).size}
+                  </span>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        {/* Sales Commission Section */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-surface-900 mb-6">Sales Commission Tracking</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                  <ApperIcon name="Users" size={24} className="text-emerald-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-surface-900">Sales Staff</h3>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Total Staff</span>
+                  <span className="font-medium">{commissionSummary.totalStaff || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Active Staff</span>
+                  <span className="font-medium text-green-600">{commissionSummary.activeStaff || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Avg Commission Rate</span>
+                  <span className="font-medium">{(commissionSummary.averageCommissionRate || 0).toFixed(1)}%</span>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-rose-100 rounded-lg flex items-center justify-center">
+                  <ApperIcon name="TrendingUp" size={24} className="text-rose-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-surface-900">Commission Payments</h3>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Total Paid</span>
+                  <span className="font-medium">{formatCurrency(commissionSummary.totalCommissionsPaid || 0)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">This Month</span>
+                  <span className="font-medium text-green-600">{formatCurrency(commissionSummary.thisMonthCommissions || 0)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Top Performer</span>
+                  <span className="font-medium text-xs">{commissionSummary.topPerformer?.staffName || 'N/A'}</span>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
+                  <ApperIcon name="Target" size={24} className="text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-surface-900">Performance Metrics</h3>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Commission Types</span>
+                  <span className="font-medium text-xs">
+                    {commissions.filter(c => c.commissionType === 'Percentage').length}% / 
+                    {commissions.filter(c => c.commissionType === 'Fixed').length}F / 
+                    {commissions.filter(c => c.commissionType === 'Tiered').length}T
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Revenue Impact</span>
+                  <span className="font-medium">{((commissionSummary.thisMonthCommissions || 0) / (report.totalRevenue || 1) * 100).toFixed(1)}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Recurring Revenue</span>
+                  <span className="font-medium text-green-600">
+                    {formatCurrency(commissions.reduce((sum, c) => sum + (c.recurringRate || 0) * 100, 0))}
+                  </span>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        {/* Partner Discount Section */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-surface-900 mb-6">Partner Discount Tracking</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center">
+                  <ApperIcon name="Handshake" size={24} className="text-cyan-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-surface-900">Partner Overview</h3>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Total Partners</span>
+                  <span className="font-medium">{discountSummary.totalPartners || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Active Partners</span>
+                  <span className="font-medium text-green-600">{discountSummary.activePartners || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Avg Discount</span>
+                  <span className="font-medium">{(discountSummary.averageDiscountValue || 0).toFixed(1)}%</span>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                  <ApperIcon name="Percent" size={24} className="text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-surface-900">Discount Impact</h3>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Total Discounts</span>
+                  <span className="font-medium">{formatCurrency(discountSummary.totalDiscountsGiven || 0)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">This Month</span>
+                  <span className="font-medium text-red-600">{formatCurrency(discountSummary.thisMonthDiscounts || 0)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Revenue Impact</span>
+                  <span className="font-medium">{((discountSummary.thisMonthDiscounts || 0) / (report.totalRevenue || 1) * 100).toFixed(1)}%</span>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-violet-100 rounded-lg flex items-center justify-center">
+                  <ApperIcon name="BarChart" size={24} className="text-violet-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-surface-900">Usage Statistics</h3>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Total Usage</span>
+                  <span className="font-medium">{discountSummary.totalUsageCount || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">This Month</span>
+                  <span className="font-medium text-green-600">{discountSummary.thisMonthUsageCount || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-surface-600">Top Partner</span>
+                  <span className="font-medium text-xs">{discountSummary.topPartner?.partnerName || 'N/A'}</span>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        {/* Net Income Summary */}
+        <div className="mb-8">
+          <Card className="p-6">
+            <h3 className="text-xl font-semibold text-surface-900 mb-6">Net Income Analysis</h3>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600 mb-2">
+                  {formatCurrency(report.totalRevenue)}
+                </div>
+                <div className="text-sm text-surface-600">Total Revenue</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-600 mb-2">
+                  -{formatCurrency(commissionSummary.thisMonthCommissions || 0)}
+                </div>
+                <div className="text-sm text-surface-600">Commissions Paid</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-600 mb-2">
+                  -{formatCurrency(discountSummary.thisMonthDiscounts || 0)}
+                </div>
+                <div className="text-sm text-surface-600">Discounts Given</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600 mb-2">
+                  {formatCurrency(report.totalRevenue - (commissionSummary.thisMonthCommissions || 0) - (discountSummary.thisMonthDiscounts || 0))}
+                </div>
+                <div className="text-sm text-surface-600">Net Income</div>
+              </div>
+            </div>
+          </Card>
         </div>
 
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-surface-900 mb-4">Export Options</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Button variant="outline" icon="FileText" onClick={exportToCSV}>
               Customer Report (CSV)
             </Button>
@@ -225,7 +555,10 @@ const Reports = () => {
               Revenue Report (PDF)
             </Button>
             <Button variant="outline" icon="FileText" disabled>
-              Analytics Report (Excel)
+              Commission Report (Excel)
+            </Button>
+            <Button variant="outline" icon="FileText" disabled>
+              Discount Report (PDF)
             </Button>
           </div>
         </Card>

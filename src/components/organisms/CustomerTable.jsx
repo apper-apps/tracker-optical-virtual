@@ -144,8 +144,11 @@ const handleDelete = (customer) => {
                     <ApperIcon name="ArrowUpDown" size={14} />
                   </button>
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
+<th className="px-6 py-4 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
                   Service
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
+                  Company Type
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">
                   <button
@@ -207,11 +210,20 @@ const handleDelete = (customer) => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-surface-900">
                     {customer.company}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+<td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-surface-900">{customer.serviceName}</div>
                     {customer.quantity > 1 && (
                       <div className="text-xs text-surface-500">Qty: {customer.quantity}</div>
                     )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      customer.companyType === 'Main' ? 'bg-blue-100 text-blue-800' :
+                      customer.companyType === 'Subsidiary' ? 'bg-purple-100 text-purple-800' :
+                      'bg-surface-100 text-surface-800'
+                    }`}>
+                      {customer.companyType || 'Standard'}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-surface-900">
                     {formatCurrency(customer.price * customer.quantity)}
