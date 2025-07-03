@@ -12,11 +12,11 @@ export const getSettings = async () => {
   try {
 const params = {
       fields: [
-        { field: { Name: "Name" } },
-        { field: { Name: "company_name" } },
-        { field: { Name: "gst_rate" } },
-        { field: { Name: "currency1" } },
-        { field: { Name: "currency_symbol" } }
+        { "field": { "Name": "Name" } },
+        { "field": { "Name": "company_name" } },
+        { "field": { "Name": "gst_rate" } },
+        { "field": { "Name": "currency1" } },
+        { "field": { "Name": "currency_symbol" } }
       ]
     }
 
@@ -52,7 +52,7 @@ export const updateSettings = async (settingsData) => {
   try {
 // First, try to get existing settings to check if we need to create or update
 const existingSettings = await apperClient.fetchRecords(tableName, {
-      fields: [{ field: { Name: "Name" } }]
+      fields: [{ "field": { "Name": "Name" } }]
     })
 
     const params = {
