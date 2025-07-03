@@ -51,7 +51,7 @@ if (!response.success) {
 export const updateSettings = async (settingsData) => {
   try {
 // First, try to get existing settings to check if we need to create or update
-    const existingSettings = await apperClient.fetchRecords(tableName, {
+const existingSettings = await apperClient.fetchRecords(tableName, {
       fields: [{ field: { Name: "Name" } }]
     })
 
