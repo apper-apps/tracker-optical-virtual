@@ -10,7 +10,7 @@ const Select = forwardRef(({
   className = '',
   ...props 
 }, ref) => {
-  const baseClasses = "w-full px-4 py-2.5 border border-surface-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 bg-white appearance-none"
+const baseClasses = "w-full px-3 sm:px-4 py-2.5 border border-surface-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 bg-white appearance-none text-sm sm:text-base min-h-[44px]"
   const errorClasses = error ? "border-red-500 focus:ring-red-500 focus:border-red-500" : ""
   
   return (
@@ -20,10 +20,10 @@ const Select = forwardRef(({
           {label}
         </label>
       )}
-      <div className="relative">
+<div className="relative">
         <select
           ref={ref}
-          className={`${baseClasses} ${errorClasses} ${className}`}
+          className={`${baseClasses} ${errorClasses} ${className} pr-10`}
           {...props}
         >
           <option value="">{placeholder}</option>

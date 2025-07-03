@@ -127,11 +127,11 @@ const validateForm = () => {
     
     setLoading(true)
     try {
-      const customerData = {
+const customerData = {
         ...formData,
         price: parseFloat(formData.price),
         quantity: parseInt(formData.quantity),
-        contractDuration: parseInt(formData.contractDuration)
+        contract_duration: parseInt(formData.contract_duration)
       }
       
       if (customer) {
@@ -148,10 +148,10 @@ const validateForm = () => {
     }
   }
   
-  const getServiceOptions = () => {
+const getServiceOptions = () => {
     return services.map(service => ({
       value: service.Id,
-      label: `${service.name} ($${service.minPrice} - $${service.maxPrice})`
+      label: `${service.Name} ($${service.min_price} - $${service.max_price})`
     }))
   }
   
@@ -182,9 +182,9 @@ const validateForm = () => {
       title={customer ? 'Edit Customer' : 'Add New Customer'}
       size="lg"
     >
-      <form onSubmit={handleSubmit} className="p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-<Input
+<form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <Input
             label="First Name"
             name="first_name"
             value={formData.first_name}
@@ -192,7 +192,7 @@ const validateForm = () => {
             error={errors.first_name}
             required
           />
-<Input
+          <Input
             label="Last Name"
             name="last_name"
             value={formData.last_name}
@@ -202,7 +202,7 @@ const validateForm = () => {
           />
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <Input
             label="Email"
             name="email"
@@ -228,9 +228,8 @@ const validateForm = () => {
           error={errors.company}
           required
         />
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-<Select
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <Select
             label="Service"
             name="service_id"
             value={formData.service_id}
@@ -251,8 +250,8 @@ const validateForm = () => {
           />
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-<Select
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <Select
             label="Billing Frequency"
             name="billing_frequency"
             value={formData.billing_frequency}
@@ -269,8 +268,8 @@ const validateForm = () => {
           />
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-<Input
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <Input
             label="Start Date"
             name="start_date"
             type="date"
@@ -279,7 +278,7 @@ const validateForm = () => {
             error={errors.start_date}
             required
           />
-<Input
+          <Input
             label="Contract Duration (months)"
             name="contract_duration"
             type="number"
@@ -289,7 +288,7 @@ const validateForm = () => {
           />
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <Select
             label="Status"
             name="status"
@@ -297,7 +296,7 @@ const validateForm = () => {
             onChange={handleInputChange}
             options={statusOptions}
           />
-<Select
+          <Select
             label="Payment Status"
             name="payment_status"
             value={formData.payment_status}
@@ -306,7 +305,7 @@ const validateForm = () => {
           />
         </div>
         
-        <div>
+<div>
           <label className="block text-sm font-medium text-surface-700 mb-2">
             Notes
           </label>
@@ -315,16 +314,17 @@ const validateForm = () => {
             value={formData.notes}
             onChange={handleInputChange}
             rows={3}
-            className="w-full px-4 py-2.5 border border-surface-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 bg-white"
+            className="w-full px-3 sm:px-4 py-2.5 border border-surface-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 bg-white text-sm sm:text-base"
             placeholder="Additional notes..."
           />
         </div>
         
-        <div className="flex justify-end space-x-3 pt-4 border-t border-surface-200">
-          <Button
+        <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-4 border-t border-surface-200">
+<Button
             type="button"
             variant="outline"
             onClick={onClose}
+            className="w-full sm:w-auto"
           >
             Cancel
           </Button>
@@ -332,6 +332,7 @@ const validateForm = () => {
             type="submit"
             variant="primary"
             loading={loading}
+            className="w-full sm:w-auto"
           >
             {customer ? 'Update Customer' : 'Add Customer'}
           </Button>
