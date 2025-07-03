@@ -22,9 +22,10 @@ export const getSettings = async () => {
 
     const response = await apperClient.fetchRecords(tableName, params)
     
-    if (!response.success) {
-      console.error(response.message)
-      throw new Error(response.message)
+if (!response.success) {
+      const errorMessage = response?.message || 'Failed to fetch settings'
+      console.error(errorMessage)
+      throw new Error(errorMessage)
     }
 
     // Return first settings record or default values
@@ -73,9 +74,10 @@ export const updateSettings = async (settingsData) => {
       response = await apperClient.createRecord(tableName, params)
     }
     
-    if (!response.success) {
-      console.error(response.message)
-      throw new Error(response.message)
+if (!response.success) {
+      const errorMessage = response?.message || 'Failed to update settings'
+      console.error(errorMessage)
+      throw new Error(errorMessage)
     }
 
     if (response.results) {
