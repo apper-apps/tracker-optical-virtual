@@ -29,32 +29,64 @@ const loadData = async () => {
     setError('')
     
     try {
-      const [
-        customersData, 
-        settingsData, 
-        transactionsData, 
-        commissionsData,
-        discountsData,
-        commissionSummaryData,
-        discountSummaryData
-      ] = await Promise.all([
-        getCustomers(),
-        getSettings(),
-        getInterCompanyTransactions(),
-        getSalesCommissions(),
-        getPartnerDiscounts(),
-        getCommissionSummary(),
-        getDiscountSummary()
+      // Load data with individual error handling to allow partial loading
+      const results = await Promise.allSettled([
+        getCustomers().catch(err => {
+          console.error('Failed to load customers:', err)
+          return []
+        }),
+        getSettings().catch(err => {
+          console.error('Failed to load settings:', err)
+          return { gstRate: 10, currencySymbol: '$' }
+        }),
+        getInterCompanyTransactions().catch(err => {
+          console.error('Failed to load inter-company transactions:', err)
+          return []
+        }),
+        getSalesCommissions().catch(err => {
+          console.error('Failed to load sales commissions:', err)
+          return []
+        }),
+        getPartnerDiscounts().catch(err => {
+          console.error('Failed to load partner discounts:', err)
+          return []
+        }),
+        getCommissionSummary().catch(err => {
+          console.error('Failed to load commission summary:', err)
+          return {}
+        }),
+        getDiscountSummary().catch(err => {
+          console.error('Failed to load discount summary:', err)
+          return {}
+        })
       ])
       
-      setCustomers(customersData)
-      setSettings(settingsData)
-      setTransactions(transactionsData)
-      setCommissions(commissionsData)
-      setDiscounts(discountsData)
-      setCommissionSummary(commissionSummaryData)
-      setDiscountSummary(discountSummaryData)
+      // Extract values from settled promises, using fulfilled values or fallbacks
+      const [
+        customersResult,
+        settingsResult,
+        transactionsResult,
+        commissionsResult,
+        discountsResult,
+        commissionSummaryResult,
+        discountSummaryResult
+      ] = results.map(result => result.status === 'fulfilled' ? result.value : result.reason)
+      
+      setCustomers(Array.isArray(customersResult) ? customersResult : [])
+      setSettings(settingsResult || { gstRate: 10, currencySymbol: '$' })
+      setTransactions(Array.isArray(transactionsResult) ? transactionsResult : [])
+      setCommissions(Array.isArray(commissionsResult) ? commissionsResult : [])
+      setDiscounts(Array.isArray(discountsResult) ? discountsResult : [])
+      setCommissionSummary(commissionSummaryResult || {})
+      setDiscountSummary(discountSummaryResult || {})
+      
+      // Check if critical data failed to load
+      const failedServices = results.filter(result => result.status === 'rejected').length
+      if (failedServices > 0) {
+        console.warn(`${failedServices} services failed to load, showing partial data`)
+      }
     } catch (err) {
+      console.error('Critical error loading reports data:', err)
       setError('Failed to load reports data')
     } finally {
       setLoading(false)
@@ -252,21 +284,21 @@ const loadData = async () => {
                   <h3 className="text-lg font-semibold text-surface-900">Transaction Summary</h3>
                 </div>
               </div>
-              <div className="space-y-2">
+<div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-surface-600">Total Transactions</span>
-                  <span className="font-medium">{transactions.length}</span>
+                  <span className="font-medium">{transactions?.length || 0}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-surface-600">Payments</span>
                   <span className="font-medium text-green-600">
-                    {transactions.filter(t => t.transactionType === 'Payment').length}
+                    {transactions?.filter(t => t?.transactionType === 'Payment')?.length || 0}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-surface-600">Cost Absorptions</span>
                   <span className="font-medium text-blue-600">
-                    {transactions.filter(t => t.transactionType === 'Cost Absorption').length}
+                    {transactions?.filter(t => t?.transactionType === 'Cost Absorption')?.length || 0}
                   </span>
                 </div>
               </div>
@@ -281,30 +313,31 @@ const loadData = async () => {
                   <h3 className="text-lg font-semibold text-surface-900">Financial Flow</h3>
                 </div>
               </div>
-              <div className="space-y-2">
+<div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-surface-600">Total Payments</span>
                   <span className="font-medium text-green-600">
-                    {formatCurrency(transactions
-                      .filter(t => t.transactionType === 'Payment')
-                      .reduce((sum, t) => sum + (t.amount || 0), 0)
+                    {formatCurrency((transactions || [])
+                      .filter(t => t?.transactionType === 'Payment')
+                      .reduce((sum, t) => sum + (parseFloat(t?.amount) || 0), 0)
                     )}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-surface-600">Total Absorptions</span>
                   <span className="font-medium text-blue-600">
-                    {formatCurrency(transactions
-                      .filter(t => t.transactionType === 'Cost Absorption')
-                      .reduce((sum, t) => sum + (t.amount || 0), 0)
+                    {formatCurrency((transactions || [])
+                      .filter(t => t?.transactionType === 'Cost Absorption')
+                      .reduce((sum, t) => sum + (parseFloat(t?.amount) || 0), 0)
                     )}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-surface-600">Net Flow</span>
                   <span className="font-medium">
-                    {formatCurrency(transactions.reduce((sum, t) => {
-                      return t.transactionType === 'Payment' ? sum + (t.amount || 0) : sum - (t.amount || 0)
+                    {formatCurrency((transactions || []).reduce((sum, t) => {
+                      const amount = parseFloat(t?.amount) || 0
+                      return t?.transactionType === 'Payment' ? sum + amount : sum - amount
                     }, 0))}
                   </span>
                 </div>
@@ -320,23 +353,34 @@ const loadData = async () => {
                   <h3 className="text-lg font-semibold text-surface-900">Company Breakdown</h3>
                 </div>
               </div>
-              <div className="space-y-2">
+<div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-surface-600">Main Companies</span>
                   <span className="font-medium">
-                    {customers.filter(c => c.companyType === 'Main').length}
+                    {(customers || []).filter(c => c?.companyType === 'Main').length}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-surface-600">Subsidiaries</span>
                   <span className="font-medium">
-                    {customers.filter(c => c.companyType === 'Subsidiary').length}
+                    {(customers || []).filter(c => c?.companyType === 'Subsidiary').length}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-surface-600">Active Relationships</span>
                   <span className="font-medium text-green-600">
-                    {new Set([...transactions.map(t => t.mainCompany), ...transactions.map(t => t.subsidiary)]).size}
+                    {(() => {
+                      try {
+                        const relationshipIds = new Set([
+                          ...(transactions || []).map(t => t?.mainCompany).filter(id => id != null),
+                          ...(transactions || []).map(t => t?.subsidiary).filter(id => id != null)
+                        ])
+                        return relationshipIds.size
+                      } catch (err) {
+                        console.error('Error calculating active relationships:', err)
+                        return 0
+                      }
+                    })()}
                   </span>
                 </div>
               </div>
